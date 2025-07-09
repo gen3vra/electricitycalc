@@ -1,0 +1,1592 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electrical Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .main-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 40px);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: #1e1f23;
+            }
+        }
+
+        .calculator-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .calculator-container {
+                background: hsla(0, 0%, 53.3%, 0.4);
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            transition: color 0.3s ease;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.2em;
+            transition: color 0.3s ease;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .header h1 {
+                color: #e0e0e0;
+            }
+
+            .header p {
+                color: #b0b0b0;
+            }
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .input-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+            font-size: 1.1em;
+            transition: color 0.3s ease;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            label {
+                color: #e0e0e0;
+            }
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 18px 50px 18px 20px;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            font-size: 1.3em;
+            transition: all 0.3s ease;
+            background: white;
+            color: #333;
+            font-weight: 500;
+            position: relative;
+        }
+
+        /* Default spinner */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        .number-input-container {
+            position: relative;
+        }
+
+        .custom-spinner {
+            position: absolute;
+            right: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            height: calc(100% - 8px);
+        }
+
+        .spinner-btn {
+            width: 40px;
+            height: 50%;
+            border: none;
+            background: #667eea;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .spinner-btn:first-child {
+            border-top-right-radius: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .spinner-btn:last-child {
+            border-bottom-right-radius: 10px;
+        }
+
+        .spinner-btn:hover {
+            background: #5a67d8;
+        }
+
+        .spinner-btn:active {
+            transform: scale(0.95);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .custom-spinner .spinner-btn {
+                background: #5a67d8;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .custom-spinner .spinner-btn:hover {
+                background: #667eea;
+            }
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input[type="number"]:valid {
+            border-color: #28a745;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            input[type="number"] {
+                background: #2d2d2d;
+                color: #e0e0e0;
+                border-color: #555;
+            }
+
+            input[type="number"]:focus {
+                border-color: #667eea;
+                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+            }
+
+            input[type="number"]:valid {
+                border-color: #28a745;
+            }
+        }
+
+        .unit {
+            background: #f8f9fa;
+            padding: 18px 20px;
+            border-radius: 12px;
+            font-weight: bold;
+            color: #666;
+            min-width: 70px;
+            text-align: center;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            font-size: 1.2em;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .unit {
+                background: #3d3d3d;
+                color: #b0b0b0;
+            }
+        }
+
+        .help-button {
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            margin-left: 10px;
+        }
+
+        .help-button:hover {
+            background: #5a67d8;
+            transform: scale(1.1);
+        }
+
+        .help-tooltip {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #333;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 0.9em;
+            line-height: 1.4;
+            z-index: 1000;
+            display: none;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .help-tooltip {
+                background: #1a1a1a;
+                color: #e0e0e0;
+            }
+        }
+
+        .help-tooltip::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 10px solid #333;
+        }
+
+        .help-tooltip.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result {
+            background: #f8f9fa;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            color: #666;
+            text-align: center;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+            position: relative;
+        }
+
+        .result.calculated {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+            font-weight: bold;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .result.error {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .result {
+                background: #2d2d2d;
+                border-color: #555;
+                color: #b0b0b0;
+            }
+
+            .result.calculated {
+                background: #1a3d2e;
+                border-color: #28a745;
+                color: #90ee90;
+            }
+
+            .result.error {
+                background: #3d1a1a;
+                border-color: #dc3545;
+                color: #ffb3b3;
+            }
+
+            .btn-copy {
+                background: rgba(102, 126, 234, 0.2);
+                color: #8fa8ff;
+                border-color: #8fa8ff;
+            }
+
+            .btn-copy:hover {
+                background: #8fa8ff;
+                color: #1e1f23;
+            }
+        }
+
+        /* Consistency Error Styling */
+        .consistency-error-container {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            width: 100%;
+        }
+
+        .consistency-header {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #721c24;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 3px solid #dc3545;
+            text-align: center;
+        }
+
+        .consistency-subheader {
+            font-size: 1.1em;
+            color: #721c24;
+            margin-bottom: 20px;
+            text-align: center;
+            font-style: italic;
+        }
+
+        .consistency-calculations {
+            margin-bottom: 20px;
+        }
+
+        .calc-group {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(220, 53, 69, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid #dc3545;
+        }
+
+        .calc-group strong {
+            color: #721c24;
+        }
+
+        .consistency-tip {
+            text-align: center;
+            font-style: italic;
+            color: #856404;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+
+        .consistency-clear-btn {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .consistency-header {
+                color: #ffb3b3;
+                border-bottom-color: #dc3545;
+            }
+
+            .consistency-subheader {
+                color: #ffb3b3;
+            }
+
+            .calc-group {
+                background: rgba(220, 53, 69, 0.2);
+            }
+
+            .calc-group strong {
+                color: #ffb3b3;
+            }
+
+            .consistency-tip {
+                color: #ffd700;
+            }
+        }
+
+        .formula-display {
+            background: #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .formula-display {
+                background: #2d2d2d;
+                color: #e0e0e0;
+            }
+        }
+
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 18px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .btn-info {
+            background: #5a67d8;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .btn-copy {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            border: 2px solid #667eea;
+            border-radius: 25%;
+            width: 35px;
+            height: 35px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            margin: 0;
+        }
+
+        .btn-copy:hover {
+            background: #667eea;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .btn-copy:active {
+            transform: scale(0.95);
+        }
+
+        .btn-copy.copied {
+            background: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        .ohms-law-explanation {
+            background: #fff3cd;
+            border: 2px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .ohms-law-explanation h3 {
+            color: #856404;
+            margin-bottom: 10px;
+            transition: color 0.3s ease;
+        }
+
+        .ohms-law-explanation p {
+            color: #856404;
+            line-height: 1.4;
+            transition: color 0.3s ease;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .ohms-law-explanation {
+                background: #3d3520;
+                border-color: #665c2a;
+            }
+
+            .ohms-law-explanation h3 {
+                color: #ffd700;
+            }
+
+            .ohms-law-explanation p {
+                color: #f0e68c;
+            }
+        }
+
+        .floating-rose {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #700000, #452b2b);
+            border: none;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+            transition: all 0.3s ease;
+            animation: floatPulse 2s ease-in-out infinite;
+        }
+
+        .floating-rose:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.5);
+        }
+
+        @keyframes floatPulse {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        /* Success animation for calculated results */
+        .result.calculated {
+            animation: successPulse 0.6s ease-out;
+        }
+
+        @keyframes successPulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.4);
+            }
+
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 0 10px rgba(40, 167, 69, 0.1);
+            }
+
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+            }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .floating-rose {
+                background: linear-gradient(45deg, #2d2d2d, #ff8e8e);
+                box-shadow: 0 4px 15px rgba(255, 82, 82, 0.3);
+            }
+
+            .floating-rose:hover {
+                box-shadow: 0 6px 20px rgba(255, 82, 82, 0.5);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .calculator-container {
+                margin: 10px;
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .input-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .unit {
+                min-width: auto;
+                align-self: flex-start;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+
+            .floating-rose {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+                top: 15px;
+                right: 15px;
+            }
+        }
+
+        /* Footer and Advanced Info Styles */
+        .footer {
+            text-align: center;
+            padding: 30px 20px;
+            margin-top: 40px;
+        }
+
+        .advanced-info {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .advanced-info.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .advanced-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: scale(0.9) translateY(-20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            transition: color 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .advanced-content h3 {
+            color: #333;
+            font-size: 1.8em;
+            margin-bottom: 25px;
+            text-align: center;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+
+        .info-section {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-section h4 {
+            color: #333;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .info-section p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .info-section .formula {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            text-align: center;
+            margin: 10px 0;
+            color: #333;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .advanced-content {
+                background: hsl(0, 0%, 20%);
+            }
+
+            .advanced-content h3 {
+                color: #e0e0e0;
+                border-bottom-color: #8fa8ff;
+            }
+
+            .close-btn {
+                color: #b0b0b0;
+            }
+
+            .close-btn:hover {
+                color: #e0e0e0;
+            }
+
+            .info-section {
+                background: #2d2d2d;
+                border-left-color: #8fa8ff;
+            }
+
+            .info-section h4 {
+                color: #e0e0e0;
+            }
+
+            .info-section p {
+                color: #b0b0b0;
+            }
+
+            .info-section .formula {
+                background: #3d3d3d;
+                color: #e0e0e0;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .footer {
+                margin: 20px 10px;
+                padding: 15px;
+            }
+
+            .advanced-content {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            .info-section {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <button class="floating-rose" onclick="window.open('https://rose.dev', '_blank')">🌹</button>
+
+    <div class="main-container">
+        <div class="calculator-container">
+            <div class="header">
+                <h1>Electrical Calculator</h1>
+                <p>Simple circuit calculation</p>
+            </div>
+
+            <div class="input-group">
+                <div class="input-row">
+                    <div class="input-wrapper">
+                        <label for="voltage">
+                            Voltage (V)
+                            <button class="help-button" onclick="toggleHelp('voltage-help')">?</button>
+                        </label>
+                        <div class="number-input-container">
+                            <input type="number" id="voltage" placeholder="12" step="0.1">
+                            <div class="custom-spinner">
+                                <button class="spinner-btn" onclick="incrementValue('voltage')" type="button">▲</button>
+                                <button class="spinner-btn" onclick="decrementValue('voltage')" type="button">▼</button>
+                            </div>
+                        </div>
+                        <div class="help-tooltip" id="voltage-help">
+                            <strong>Voltage</strong> is like a force that pushes electricity through wires.<br>
+                            Think of it like water pressure in a hose. The higher the voltage, the stronger the
+                            push.<br>
+                            <em>Examples:</em><br>
+                            • AA battery: 1.5V<br>
+                            • Phone charger: 5V<br>
+                            • Car battery: 12V<br>
+                            • House outlet: 120V (US) / 240V (UK)
+                        </div>
+                    </div>
+                    <div class="unit">V</div>
+                </div>
+
+                <div class="input-row">
+                    <div class="input-wrapper">
+                        <label for="current">
+                            Current (I)
+                            <button class="help-button" onclick="toggleHelp('current-help')">?</button>
+                        </label>
+                        <div class="number-input-container">
+                            <input type="number" id="current" placeholder="2" step="0.1">
+                            <div class="custom-spinner">
+                                <button class="spinner-btn" onclick="incrementValue('current')" type="button">▲</button>
+                                <button class="spinner-btn" onclick="decrementValue('current')" type="button">▼</button>
+                            </div>
+                        </div>
+                        <div class="help-tooltip" id="current-help">
+                            <strong>Current</strong> is how much electricity flows through the wire.<br>
+                            It's like how much water flows through a hose. More current means more electricity.<br>
+                            <em>Examples:</em><br>
+                            • LED light: 0.02A<br>
+                            • Phone charging: 1-2A<br>
+                            • Laptop: 3-5A<br>
+                            • Microwave: 10-15A<br>
+                            • Hair dryer: 12-15A
+                        </div>
+                    </div>
+                    <div class="unit">A</div>
+                </div>
+
+                <div class="input-row">
+                    <div class="input-wrapper">
+                        <label for="resistance">
+                            Resistance (R)
+                            <button class="help-button" onclick="toggleHelp('resistance-help')">?</button>
+                        </label>
+                        <div class="number-input-container">
+                            <input type="number" id="resistance" placeholder="6" step="0.1">
+                            <div class="custom-spinner">
+                                <button class="spinner-btn" onclick="incrementValue('resistance')"
+                                    type="button">▲</button>
+                                <button class="spinner-btn" onclick="decrementValue('resistance')"
+                                    type="button">▼</button>
+                            </div>
+                        </div>
+                        <div class="help-tooltip" id="resistance-help">
+                            <strong>Resistance</strong> is how much something fights against electricity flowing through
+                            it.<br>
+                            It's like rocks in a river. More resistance means electricity moves
+                            slower.<br>
+                            <em>Examples:</em><br>
+                            • Copper wire: 0.001Ω<br>
+                            • LED resistor: 220Ω<br>
+                            • Light bulb: 100-500Ω<br>
+                            • Heating element: 10-50Ω<br>
+                            • Human body: 1000Ω
+                        </div>
+                    </div>
+                    <div class="unit">Ω</div>
+                </div>
+
+                <div class="input-row">
+                    <div class="input-wrapper">
+                        <label for="power">
+                            Power (P)
+                            <button class="help-button" onclick="toggleHelp('power-help')">?</button>
+                        </label>
+                        <div class="number-input-container">
+                            <input type="number" id="power" placeholder="24" step="0.1">
+                            <div class="custom-spinner">
+                                <button class="spinner-btn" onclick="incrementValue('power')" type="button">▲</button>
+                                <button class="spinner-btn" onclick="decrementValue('power')" type="button">▼</button>
+                            </div>
+                        </div>
+                        <div class="help-tooltip" id="power-help">
+                            <strong>Power</strong> is how much energy something uses.<br>
+                            It's like how hard you have to pedal a bike. More power means using more energy.<br>
+                            <em>Examples:</em><br>
+                            • LED light: 5-10W<br>
+                            • Phone charger: 10-20W<br>
+                            • Laptop: 50-90W<br>
+                            • Microwave: 1000W<br>
+                            • Hair dryer: 1500W
+                        </div>
+                    </div>
+                    <div class="unit">W</div>
+                </div>
+
+                <div class="input-row">
+                    <div class="input-wrapper">
+                        <label for="costPerKwh">
+                            Cost per kWh (Optional)
+                            <button class="help-button" onclick="toggleHelp('cost-help')">?</button>
+                        </label>
+                        <div class="number-input-container">
+                            <input type="number" id="costPerKwh" placeholder="0.12" step="0.01">
+                            <div class="custom-spinner">
+                                <button class="spinner-btn" onclick="incrementValue('costPerKwh')"
+                                    type="button">▲</button>
+                                <button class="spinner-btn" onclick="decrementValue('costPerKwh')"
+                                    type="button">▼</button>
+                            </div>
+                        </div>
+                        <div class="help-tooltip" id="cost-help">
+                            <strong>Cost per kWh</strong> is how much you pay for electricity.<br>
+                            It's like the price per gallon of gas. This helps calculate how much it costs to run
+                            something.<br>
+                            <em>Examples:</em><br>
+                            • US average: $0.12/kWh<br>
+                            • California: $0.25/kWh<br>
+                            • Texas: $0.11/kWh<br>
+                            • New York: $0.20/kWh
+                        </div>
+                    </div>
+                    <div class="unit">$</div>
+                </div>
+            </div>
+
+            <div class="result" id="result">
+            </div>
+
+            <div class="formula-display" id="formula">
+                V = I x R &nbsp;&nbsp;&nbsp; P = V x I
+            </div>
+
+            <div class="buttons">
+                <button class="btn btn-primary" onclick="calculateCircuit()">Calculate Now!</button>
+                <button class="btn btn-secondary" onclick="clearAll()">Clear All</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="ohms-law-explanation">
+            <h3>Ohm's Law</h3>
+            <p>Voltage = Current x Resistance<br>
+                Power = Voltage x Current</p>
+        </div>
+        <button class="btn btn-info" onclick="toggleAdvancedInfo()">Learn More About Ohm's Law</button>
+    </footer>
+
+    <div class="advanced-info" id="advancedInfo">
+        <div class="advanced-content">
+            <button class="close-btn" onclick="toggleAdvancedInfo()">x</button>
+            <h3>Advanced Aspects of Ohm's Law</h3>
+
+            <div class="info-section">
+                <h4>Non-linear and Complex Materials:</h4>
+                <p>In real-world materials, resistance might not remain constant across all conditions. Semiconductors,
+                    superconductors, and other non-linear materials might not follow Ohm's Law in the simple sense. For
+                    instance, in devices like diodes and transistors, the relationship between voltage and current is
+                    more complicated.</p>
+            </div>
+
+            <div class="info-section">
+                <h4>Temperature Dependence:</h4>
+                <p>The resistance of most materials changes with temperature. This means Ohm's Law in real applications
+                    can become more nuanced because the resistance R isn't constant. Special materials like thermistors
+                    and resistance temperature detectors (RTDs) are designed to exploit this relationship.</p>
+            </div>
+
+            <div class="info-section">
+                <h4>Frequency Dependence (AC Circuits):</h4>
+                <p>In alternating current (AC) circuits, resistance is often extended to impedance, which accounts not
+                    only for resistance but also for reactance due to capacitors and inductors. Impedance Z replaces R
+                    in Ohm's Law for AC circuits:</p>
+                <div class="formula">V = I x Z</div>
+                <p>In this case, the relationship between voltage, current, and impedance can become more complex due to
+                    phase shifts, resonance, and frequency-dependent effects.</p>
+            </div>
+
+            <div class="info-section">
+                <h4>Quantum and Relativistic Effects:</h4>
+                <p>At the quantum level, materials like graphene exhibit very unique properties that can challenge
+                    traditional interpretations of Ohm's Law. Quantum mechanics and relativistic effects might modify
+                    how we understand the behavior of electrons in these materials.</p>
+            </div>
+
+            <div class="info-section">
+                <h4>Superconductivity:</h4>
+                <p>In superconducting materials, resistance drops to zero below a certain critical temperature. Ohm's
+                    Law doesn't apply in the traditional sense because the current flows without resistance, and the
+                    concept of "voltage drop" across the material doesn't hold.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const voltageInput = document.getElementById('voltage');
+        const currentInput = document.getElementById('current');
+        const resistanceInput = document.getElementById('resistance');
+        const powerInput = document.getElementById('power');
+        const costPerKwhInput = document.getElementById('costPerKwh');
+        const resultDiv = document.getElementById('result');
+        const formulaDiv = document.getElementById('formula');
+
+        voltageInput.addEventListener('blur', calculateCircuit);
+        currentInput.addEventListener('blur', calculateCircuit);
+        resistanceInput.addEventListener('blur', calculateCircuit);
+        powerInput.addEventListener('blur', calculateCircuit);
+
+        voltageInput.addEventListener('input', validateInput);
+        currentInput.addEventListener('input', validateInput);
+        resistanceInput.addEventListener('input', validateInput);
+        powerInput.addEventListener('input', validateInput);
+
+        const welcomeMessage = "Enter any two values to calculate the others.";
+        function validateInput(event) {
+            const input = event.target;
+            const value = parseFloat(input.value);
+
+            // Remove any existing error styling
+            input.style.borderColor = '';
+
+            // Check for negative values
+            if (value < 0) {
+                input.style.borderColor = '#dc3545';
+                showResult('Oops! Electrical values cannot be negative! 😊', 'error');
+                return false;
+            }
+
+            return true;
+        }
+
+        function checkConsistency(voltage, current, resistance, power) {
+            // Calculate all possible combinations and check for consistency
+            const tolerance = 0.01;
+            let inconsistencies = [];
+            let calculations = [];
+
+            // Calculate using V and I
+            const calc_R_from_VI = voltage / current;
+            const calc_P_from_VI = voltage * current;
+            calculations.push({
+                formula: 'Using V and I',
+                resistance: calc_R_from_VI,
+                power: calc_P_from_VI
+            });
+
+            // Calculate using V and R
+            const calc_I_from_VR = voltage / resistance;
+            const calc_P_from_VR = voltage * calc_I_from_VR;
+            calculations.push({
+                formula: 'Using V and R',
+                current: calc_I_from_VR,
+                power: calc_P_from_VR
+            });
+
+            // Calculate using I and R
+            const calc_V_from_IR = current * resistance;
+            const calc_P_from_IR = calc_V_from_IR * current;
+            calculations.push({
+                formula: 'Using I and R',
+                voltage: calc_V_from_IR,
+                power: calc_P_from_IR
+            });
+
+            // Calculate using V and P
+            const calc_I_from_VP = power / voltage;
+            const calc_R_from_VP = voltage / calc_I_from_VP;
+            calculations.push({
+                formula: 'Using V and P',
+                current: calc_I_from_VP,
+                resistance: calc_R_from_VP
+            });
+
+            // Calculate using I and P
+            const calc_V_from_IP = power / current;
+            const calc_R_from_IP = calc_V_from_IP / current;
+            calculations.push({
+                formula: 'Using I and P',
+                voltage: calc_V_from_IP,
+                resistance: calc_R_from_IP
+            });
+
+            // Calculate using R and P
+            const calc_I_from_RP = Math.sqrt(power / resistance);
+            const calc_V_from_RP = calc_I_from_RP * resistance;
+            calculations.push({
+                formula: 'Using R and P',
+                voltage: calc_V_from_RP,
+                current: calc_I_from_RP
+            });
+
+            // Highlight inconsistent fields in red
+            const tolerance_check = 0.5; // More lenient for highlighting
+
+            // Check voltage consistency
+            const avgVoltage = (calc_V_from_IR + calc_V_from_IP + calc_V_from_RP) / 3;
+            if (Math.abs(voltage - avgVoltage) > tolerance_check) {
+                voltageInput.style.borderColor = '#dc3545';
+                voltageInput.style.borderWidth = '3px';
+            }
+
+            // Check current consistency
+            const avgCurrent = (calc_I_from_VR + calc_I_from_VP + calc_I_from_RP) / 3;
+            if (Math.abs(current - avgCurrent) > tolerance_check) {
+                currentInput.style.borderColor = '#dc3545';
+                currentInput.style.borderWidth = '3px';
+            }
+
+            // Check resistance consistency
+            const avgResistance = (calc_R_from_VI + calc_R_from_VP + calc_R_from_IP) / 3;
+            if (Math.abs(resistance - avgResistance) > tolerance_check) {
+                resistanceInput.style.borderColor = '#dc3545';
+                resistanceInput.style.borderWidth = '3px';
+            }
+
+            // Check power consistency
+            const avgPower = (calc_P_from_VI + calc_P_from_VR + calc_P_from_IR) / 3;
+            if (Math.abs(power - avgPower) > tolerance_check) {
+                powerInput.style.borderColor = '#dc3545';
+                powerInput.style.borderWidth = '3px';
+            }
+
+            // Check if all values match inputs, if so, return true
+            if ((voltage !== null && Math.abs(voltage - avgVoltage) <= tolerance) &&
+                (current !== null && Math.abs(current - avgCurrent) <= tolerance) &&
+                (resistance !== null && Math.abs(resistance - avgResistance) <= tolerance) &&
+                (power !== null && Math.abs(power - avgPower) <= tolerance)) {
+                console.log('Values are consistent:', {
+                    voltage, current, resistance, power
+                });
+                return true; // Values are consistent
+            }
+
+            // Check for inconsistencies
+            let errorMessage = '<div class="consistency-error-container">';
+            errorMessage += '<div class="consistency-header">⚠️ Inconsistent Values</div>';
+            errorMessage += '<div class="consistency-subheader">Your values don\'t match Ohm\'s Law. It should be:</div>';
+
+            // Show different calculation results
+            errorMessage += '<div class="consistency-calculations">';
+            errorMessage += '<div class="calc-group">';
+            errorMessage += '<strong>From V=' + voltage + 'V and I=' + current + 'A:</strong><br>';
+            errorMessage += '• Resistance should be: ' + calc_R_from_VI.toFixed(2) + 'Ω (you entered ' + (resistance ? resistance + 'Ω' : 'Nothing') + ')<br>';
+            errorMessage += '• Power should be: ' + calc_P_from_VI.toFixed(2) + 'W (you entered ' + (power ? power + 'W' : 'Nothing') + ')';
+            errorMessage += '</div>';
+
+            errorMessage += '<div class="calc-group">';
+            errorMessage += '<strong>From V=' + voltage + 'V and R=' + resistance + 'Ω:</strong><br>';
+            errorMessage += '• Current should be: ' + calc_I_from_VR.toFixed(2) + 'A (you entered ' + (current ? current + 'A' : 'Nothing') + ')<br>';
+            errorMessage += '• Power should be: ' + calc_P_from_VR.toFixed(2) + 'W (you entered ' + (power ? power + 'W' : 'Nothing') + ')';
+            errorMessage += '</div>';
+
+            errorMessage += '<div class="calc-group">';
+            errorMessage += '<strong>From I=' + current + 'A and R=' + resistance + 'Ω:</strong><br>';
+            errorMessage += '• Voltage should be: ' + calc_V_from_IR.toFixed(2) + 'V (you entered ' + (voltage ? voltage + 'V' : 'Nothing') + ')<br>';
+            errorMessage += '• Power should be: ' + calc_P_from_IR.toFixed(2) + 'W (you entered ' + (power ? power + 'W' : 'Nothing') + ')';
+            errorMessage += '</div>';
+            errorMessage += '</div>';
+
+            errorMessage += '<div class="consistency-tip">Enter only two values to calculate!</div>';
+            errorMessage += '<button class="btn btn-secondary consistency-clear-btn" onclick="clearAll()">Clear All & Try Again</button>';
+            errorMessage += '</div>';
+
+            showResult(errorMessage, 'error');
+
+            // Update formula display
+            formulaDiv.innerHTML = '❌ Values don\'t match: V ≠ I x R or P ≠ V x I';
+
+            // Clear URL parameters when inconsistent values are detected
+            clearURL();
+        }
+
+        function calculateCircuit() {
+            // Get values from inputs
+            const voltage = parseFloat(voltageInput.value) || null;
+            const current = parseFloat(currentInput.value) || null;
+            const resistance = parseFloat(resistanceInput.value) || null;
+            const power = parseFloat(powerInput.value) || null;
+            console.log('Calculating with values:', {voltage, current, resistance, power});
+
+            // Count how many values we have
+            const values = [voltage, current, resistance, power];
+            const nonNullValues = values.filter(val => val !== null);
+
+            if (nonNullValues.length < 2) {
+                showResult('Please enter at least two values to calculate! 🤔', 'info');
+                return;
+            }
+
+            if (nonNullValues.length > 2) {
+                if (!checkConsistency(voltage, current, resistance, power)) {
+                    return; // Error
+                }
+            }
+
+            // Check for negative values
+            if (nonNullValues.some(val => val < 0)) {
+                showResult('Electrical values cannot be negative.', 'error');
+                return;
+            }
+
+            try {
+                let calculatedValues = {};
+                let usedFormula = '';
+
+                // Case 1: Voltage and Current given
+                if (voltage !== null && current !== null) {
+                    calculatedValues.resistance = voltage / current;
+                    calculatedValues.power = voltage * current;
+                    usedFormula = 'R = V ÷ I = ' + voltage + ' ÷ ' + current + ' = ' + calculatedValues.resistance.toFixed(2) + 'Ω<br>';
+                    usedFormula += 'P = V x I = ' + voltage + ' x ' + current + ' = ' + calculatedValues.power.toFixed(2) + 'W';
+                }
+                // Case 2: Voltage and Resistance given
+                else if (voltage !== null && resistance !== null) {
+                    calculatedValues.current = voltage / resistance;
+                    calculatedValues.power = voltage * calculatedValues.current;
+                    usedFormula = 'I = V ÷ R = ' + voltage + ' ÷ ' + resistance + ' = ' + calculatedValues.current.toFixed(2) + 'A<br>';
+                    usedFormula += 'P = V x I = ' + voltage + ' x ' + calculatedValues.current.toFixed(2) + ' = ' + calculatedValues.power.toFixed(2) + 'W';
+                }
+                // Case 3: Current and Resistance given
+                else if (current !== null && resistance !== null) {
+                    calculatedValues.voltage = current * resistance;
+                    calculatedValues.power = calculatedValues.voltage * current;
+                    usedFormula = 'V = I x R = ' + current + ' x ' + resistance + ' = ' + calculatedValues.voltage.toFixed(2) + 'V<br>';
+                    usedFormula += 'P = V x I = ' + calculatedValues.voltage.toFixed(2) + ' x ' + current + ' = ' + calculatedValues.power.toFixed(2) + 'W';
+                }
+                // Case 4: Voltage and Power given
+                else if (voltage !== null && power !== null) {
+                    calculatedValues.current = power / voltage;
+                    calculatedValues.resistance = voltage / calculatedValues.current;
+                    usedFormula = 'I = P ÷ V = ' + power + ' ÷ ' + voltage + ' = ' + calculatedValues.current.toFixed(2) + 'A<br>';
+                    usedFormula += 'R = V ÷ I = ' + voltage + ' ÷ ' + calculatedValues.current.toFixed(2) + ' = ' + calculatedValues.resistance.toFixed(2) + 'Ω';
+                }
+                // Case 5: Current and Power given
+                else if (current !== null && power !== null) {
+                    calculatedValues.voltage = power / current;
+                    calculatedValues.resistance = calculatedValues.voltage / current;
+                    usedFormula = 'V = P ÷ I = ' + power + ' ÷ ' + current + ' = ' + calculatedValues.voltage.toFixed(2) + 'V<br>';
+                    usedFormula += 'R = V ÷ I = ' + calculatedValues.voltage.toFixed(2) + ' ÷ ' + current + ' = ' + calculatedValues.resistance.toFixed(2) + 'Ω';
+                }
+                // Case 6: Resistance and Power given
+                else if (resistance !== null && power !== null) {
+                    // Using P = I²R, so I = √(P/R)
+                    calculatedValues.current = Math.sqrt(power / resistance);
+                    calculatedValues.voltage = calculatedValues.current * resistance;
+                    usedFormula = 'I = √(P ÷ R) = √(' + power + ' ÷ ' + resistance + ') = ' + calculatedValues.current.toFixed(2) + 'A<br>';
+                    usedFormula += 'V = I x R = ' + calculatedValues.current.toFixed(2) + ' x ' + resistance + ' = ' + calculatedValues.voltage.toFixed(2) + 'V';
+                }
+
+                if (Object.values(calculatedValues).some(val => !isFinite(val) || isNaN(val))) {
+                    showResult('Oops! These values don\'t work together. Try different numbers! 🤔', 'error');
+                    return;
+                }
+
+                // If we update the fields which seems undesirable user behavior
+                /*if (calculatedValues.voltage !== undefined && voltage === null) {
+                    voltageInput.value = calculatedValues.voltage.toFixed(2);
+                }
+                if (calculatedValues.current !== undefined && current === null) {
+                    currentInput.value = calculatedValues.current.toFixed(2);
+                }
+                if (calculatedValues.resistance !== undefined && resistance === null) {
+                    resistanceInput.value = calculatedValues.resistance.toFixed(2);
+                }
+                if (calculatedValues.power !== undefined && power === null) {
+                    powerInput.value = calculatedValues.power.toFixed(2);
+                }*/
+
+                // Cost
+                const costPerKwh = parseFloat(costPerKwhInput.value);
+                let costCalculation = '';
+                if (costPerKwh && costPerKwh > 0) {
+                    const finalPowerValue = power || calculatedValues.power;
+                    const costPerHour = (finalPowerValue / 1000) * costPerKwh; // Convert watts to kilowatts
+                    const costPerDay = costPerHour * 24;
+                    const costPerMonth = costPerDay * 30;
+
+                    costCalculation = '<strong>💰 Cost Calculation:</strong>';
+                    costCalculation += 'Cost per hour: $' + costPerHour.toFixed(4) + '<br>';
+                    costCalculation += 'Cost per day: $' + costPerDay.toFixed(2) + '<br>';
+                    costCalculation += 'Cost per month: $' + costPerMonth.toFixed(2);
+                }
+
+                // Show the result
+                const formulaWithCost = usedFormula + costCalculation;
+                const resultMessage = 'Calculated:<br>' + formulaWithCost + '<button class="btn btn-copy" onclick="copyResult(this)" data-formula="' + formulaWithCost.replace(/"/g, '&quot;') + '">📋</button>';
+                showResult(resultMessage, 'calculated');
+
+                // Update formula display
+                formulaDiv.innerHTML = usedFormula;
+
+                // Update URL with all current values
+                const finalVoltage = voltage || calculatedValues.voltage;
+                const finalCurrent = current || calculatedValues.current;
+                const finalResistance = resistance || calculatedValues.resistance;
+                const finalPower = power || calculatedValues.power;
+                updateURL(finalVoltage, finalCurrent, finalResistance, finalPower);
+
+            } catch (error) {
+                console.log('Error during calculation:', error);
+                showResult('Oops! Something went wrong with the calculation. Please check your values! 😅', 'error');
+            }
+        }
+
+        function showResult(message, type) {
+            resultDiv.innerHTML = message;
+            resultDiv.className = 'result ' + type;
+
+            // Animation
+            resultDiv.style.transform = 'scale(0.98)';
+            setTimeout(() => {
+                resultDiv.style.transform = 'scale(1)';
+            }, 100);
+        }
+
+        function clearAll() {
+            voltageInput.value = '';
+            currentInput.value = '';
+            resistanceInput.value = '';
+            powerInput.value = '';
+            costPerKwhInput.value = '';
+
+            showResult(welcomeMessage, 'info');
+            formulaDiv.innerHTML = 'V = I x R &nbsp;&nbsp;&nbsp; P = V x I';
+
+            // Remove any error styling
+            [voltageInput, currentInput, resistanceInput, powerInput, costPerKwhInput].forEach(input => {
+                input.style.borderColor = '';
+                input.style.borderWidth = '';
+            });
+
+            // Close all help tooltips
+            document.querySelectorAll('.help-tooltip').forEach(tip => {
+                tip.classList.remove('show');
+            });
+
+            // Clear URL parameters when clearing all values
+            clearURL();
+        }
+
+        function toggleHelp(helpId) {
+            const tooltip = document.getElementById(helpId);
+            const isVisible = tooltip.classList.contains('show');
+
+            // Hide all tooltips first
+            document.querySelectorAll('.help-tooltip').forEach(tip => {
+                tip.classList.remove('show');
+            });
+
+            // Show the clicked tooltip if it wasn't visible
+            if (!isVisible) {
+                tooltip.classList.add('show');
+
+                // Auto-hide after 5 seconds
+                setTimeout(() => {
+                    tooltip.classList.remove('show');
+                }, 5000);
+            }
+        }
+
+        function incrementValue(inputId) {
+            const input = document.getElementById(inputId);
+            const currentValue = parseFloat(input.value) || 0;
+            const step = parseFloat(input.step) || 0.1;
+            const newValue = currentValue + step;
+            input.value = newValue.toFixed(2);
+            input.dispatchEvent(new Event('blur'));
+        }
+
+        function decrementValue(inputId) {
+            const input = document.getElementById(inputId);
+            const currentValue = parseFloat(input.value) || 0;
+            const step = parseFloat(input.step) || 0.1;
+            const newValue = Math.max(0, currentValue - step);
+            input.value = newValue.toFixed(2);
+            input.dispatchEvent(new Event('blur'));
+        }
+
+        function toggleAdvancedInfo() {
+            const advancedInfo = document.getElementById('advancedInfo');
+            advancedInfo.classList.toggle('show');
+        }
+
+        // Close modal when clicking outside of it
+        document.addEventListener('click', function (event) {
+            const advancedInfo = document.getElementById('advancedInfo');
+            if (event.target === advancedInfo) {
+                advancedInfo.classList.remove('show');
+            }
+        });
+
+        // URL parameter handling
+        function updateURL(voltage, current, resistance, power) {
+            const url = new URL(window.location);
+            url.searchParams.set('v', voltage || '');
+            url.searchParams.set('i', current || '');
+            url.searchParams.set('r', resistance || '');
+            url.searchParams.set('p', power || '');
+
+            // Remove empty parameters
+            if (!voltage) url.searchParams.delete('v');
+            if (!current) url.searchParams.delete('i');
+            if (!resistance) url.searchParams.delete('r');
+            if (!power) url.searchParams.delete('p');
+
+            window.history.replaceState({}, '', url);
+        }
+
+        function clearURL() {
+            const url = new URL(window.location);
+            url.searchParams.delete('v');
+            url.searchParams.delete('i');
+            url.searchParams.delete('r');
+            url.searchParams.delete('p');
+            window.history.replaceState({}, '', url);
+        }
+
+        function loadFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const voltage = urlParams.get('v');
+            const current = urlParams.get('i');
+            const resistance = urlParams.get('r');
+            const power = urlParams.get('p');
+
+            if (voltage) document.getElementById('voltage').value = voltage;
+            if (current) document.getElementById('current').value = current;
+            if (resistance) document.getElementById('resistance').value = resistance;
+            if (power) document.getElementById('power').value = power;
+
+            // If any values were loaded from URL, trigger calculation
+            if (voltage || current || resistance || power) {
+                calculateCircuit();
+            }
+        }
+
+        // Load values from URL on page load
+        document.addEventListener('DOMContentLoaded', loadFromURL);
+
+        // Copy result to clipboard
+        async function copyResult(buttonElement) {
+            try {
+                // Get formula from data attribute
+                const formula = buttonElement.getAttribute('data-formula');
+
+                // Create clean text version without HTML tags
+                const cleanFormula = formula.replace(/<br>/g, '\n').replace(/&quot;/g, '"').replace(/<[^>]*>/g, '');
+                const textToCopy = `${cleanFormula}`;
+
+                await navigator.clipboard.writeText(textToCopy);
+
+                // Show temporary success message
+                const originalText = buttonElement.innerHTML;
+                buttonElement.innerHTML = '✓';
+                buttonElement.classList.add('copied');
+
+                setTimeout(() => {
+                    buttonElement.innerHTML = originalText;
+                    buttonElement.classList.remove('copied');
+                }, 2000);
+
+            } catch (err) {
+                // Fallback for browsers that don't support clipboard API
+                const textArea = document.createElement('textarea');
+                const formula = buttonElement.getAttribute('data-formula');
+                const cleanFormula = formula.replace(/<br>/g, '\n').replace(/&quot;/g, '"').replace(/<[^>]*>/g, '');
+                textArea.value = `Circuit Calculator Result:\n${cleanFormula}`;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+
+                // Show success message
+                const originalText = buttonElement.innerHTML;
+                buttonElement.innerHTML = '✓';
+                buttonElement.classList.add('copied');
+
+                setTimeout(() => {
+                    buttonElement.innerHTML = originalText;
+                    buttonElement.classList.remove('copied');
+                }, 2000);
+            }
+        }
+
+        // Hide tooltips when clicking outside
+        document.addEventListener('click', function (event) {
+            if (!event.target.classList.contains('help-button')) {
+                document.querySelectorAll('.help-tooltip').forEach(tip => {
+                    tip.classList.remove('show');
+                });
+            }
+        });
+
+        // Initialize the calculator
+        document.addEventListener('DOMContentLoaded', function () {
+            showResult(welcomeMessage, 'info');
+        });
+    </script>
+</body>
+
+</html>
